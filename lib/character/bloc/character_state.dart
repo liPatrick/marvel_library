@@ -1,6 +1,9 @@
 part of 'character_bloc.dart';
 
-@immutable
-abstract class CharacterState {}
+enum CharacterStatus { initial, success, failure }
 
-class CharacterInitial extends CharacterState {}
+@immutable
+class CharacterState {
+  const CharacterState({this.characters = const <Character>[]});
+  final List<Character> characters;
+}
