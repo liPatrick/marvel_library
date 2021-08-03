@@ -9,14 +9,16 @@ class Character extends Equatable {
     required this.id,
     required this.name,
     this.description,
-    this.thumbnail,
+    this.thumbnailPath,
+    this.thumbnailExtension,
     this.comics,
   });
 
   final int id;
   final String name;
   final String? description;
-  final String? thumbnail;
+  final String? thumbnailPath;
+  final String? thumbnailExtension;
   final List<Comic>? comics;
 
   @override
