@@ -16,8 +16,46 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
   Stream<CharacterState> mapEventToState(
     CharacterEvent event,
   ) async* {
+    print('char length:' + state.characters.length.toString());
     if (event is CharacterListFetched) {
-      yield await _mapCharacterListFetchedToState(state);
+      if (state.characters.length != 0) {
+      } else {
+        yield await _mapCharacterListFetchedToState(state);
+      }
+    } else if (event is CharacterSelected) {
+      yield state.copyWith(status: CharacterStatus.initial);
+      if (event.character.loaded == true) {
+        yield state.copyWith(
+          status: CharacterStatus.success,
+          selectedCharacter: event.character,
+          characters: state.characters,
+        );
+      } else {
+        yield await _mapCharacterDetailsFetchedToState(event);
+      }
+    } else if (event is CharacterDeselected) {
+      yield CharacterState(
+          characters: state.characters,
+          selectedCharacter: null,
+          status: CharacterStatus.success);
+    }
+  }
+
+  Future<CharacterState> _mapCharacterDetailsFetchedToState(
+      CharacterSelected event) async {
+    try {
+      final character = await CharacterAPI(httpClient: httpClient)
+          .fetchCharacterDetails(event.character.id.toString());
+      character.loaded = true;
+      return CharacterState(
+        status: CharacterStatus.success,
+        characters: state.characters,
+        selectedCharacter: character,
+      );
+    } on Exception {
+      return CharacterState(
+        status: CharacterStatus.failure,
+      );
     }
   }
 
@@ -31,7 +69,9 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
         characters: characters,
       );
     } on Exception {
-      return CharacterState(status: CharacterStatus.failure);
+      return CharacterState(
+        status: CharacterStatus.failure,
+      );
     }
   }
 }

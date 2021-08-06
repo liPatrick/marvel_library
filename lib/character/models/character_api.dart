@@ -1,25 +1,52 @@
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:marvel_library/character/character.dart';
-//import 'package:crypto/crypto.dart';
+import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'dart:developer';
+
+void main() async {
+  log('here');
+  final List<Character> characters =
+      await CharacterAPI(httpClient: http.Client()).fetchAllCharacters();
+  log(characters[0].id.toString());
+
+  for (var char in characters) {
+    final Character characterDetails =
+        await CharacterAPI(httpClient: http.Client())
+            .fetchCharacterDetails(char.id.toString());
+    log(characterDetails.name);
+    if (characterDetails.comics != null) {
+      for (var comic in characterDetails.comics!) {
+        log(comic.title);
+      }
+    }
+  }
+}
 
 class CharacterAPI {
   const CharacterAPI({required this.httpClient});
   final http.Client httpClient;
-  final String publicKey = '';
-  final String privateKey = '';
+  final String publicKey = 'c71a3af5ae28e9436b14c4b448152d31';
+  final String privateKey = '26617e1cb8cdd563845f1cc07c435b6f0e09a29c';
+  final String ts = '1';
+  final String limit = '20';
 
   Future<List<Character>> fetchAllCharacters() async {
     final String requestURLBase = 'https://gateway.marvel.com';
-    final String path = '/v1/public/characters';
+    final String path = '/v1/public/characters?apikey=' +
+        publicKey +
+        '&ts=' +
+        ts +
+        '&hash=' +
+        _generateMd5(ts + privateKey + publicKey) +
+        '&limit=' +
+        limit;
     final response = await httpClient.get(
-      Uri.https(requestURLBase, path, <String, String>{
-        'apikey': publicKey,
-        //'ts': '1',
-        //'hash': _generateMd5('1' + privateKey + publicKey),
-      }),
+      Uri.parse(requestURLBase + path),
     );
+    log(response.headers.toString());
+
     if (response.statusCode == 200) {
       final body = json.decode(response.body)['data']['results'] as List;
       return body.map((dynamic json) {
@@ -29,20 +56,24 @@ class CharacterAPI {
         );
       }).toList();
     }
-
     throw Exception('error fetching posts');
   }
 
   Future<Character> fetchCharacterDetails(String characterID) async {
     final String requestURLBase = 'https://gateway.marvel.com';
-    final String path = '/v1/public/characters/' + characterID;
+    final String path = '/v1/public/characters/' +
+        characterID +
+        '?apikey=' +
+        publicKey +
+        '&ts=' +
+        ts +
+        '&hash=' +
+        _generateMd5(ts + privateKey + publicKey);
+
     final response = await httpClient.get(
-      Uri.https(requestURLBase, path, <String, String>{
-        'apikey': publicKey,
-        //'ts': '1',
-        //'hash': _generateMd5('1' + privateKey + publicKey),
-      }),
+      Uri.parse(requestURLBase + path),
     );
+
     if (response.statusCode == 200) {
       final body = json.decode(response.body);
       dynamic result = body['data']['results'][0];
@@ -50,9 +81,9 @@ class CharacterAPI {
       return Character(
         id: result['id'] as int,
         name: result['name'] as String,
-        description: result['description'] as String,
-        thumbnailPath: result['thumbnail']['path'] as String,
-        thumbnailExtension: result['thumbnail']['extension'] as String,
+        description: result['description'],
+        thumbnailPath: result['thumbnail']['path'],
+        thumbnailExtension: result['thumbnail']['extension'],
         comics: comics,
       );
     }
@@ -62,33 +93,37 @@ class CharacterAPI {
 
   Future<List<Comic>> _fetchCharacterComics(String characterID) async {
     final String requestURLBase = 'https://gateway.marvel.com';
-    final String path = '/v1/public/characters/' + characterID + '/comics';
+    final String path = '/v1/public/characters/' +
+        characterID +
+        '/comics' +
+        '?apikey=' +
+        publicKey +
+        '&ts=' +
+        ts +
+        '&hash=' +
+        _generateMd5(ts + privateKey + publicKey) +
+        '&limit=' +
+        limit;
     final response = await httpClient.get(
-      Uri.https(requestURLBase, path, <String, String>{
-        'apikey': publicKey,
-        //'ts': '1',
-        //'hash': _generateMd5('1' + privateKey + publicKey),
-      }),
+      Uri.parse(requestURLBase + path),
     );
     if (response.statusCode == 200) {
-      final body = json.decode(response.body);
-      dynamic result = body['data']['results'][0];
-      return result['comics']['items'].map((dynamic json) {
+      final body = json.decode(response.body)['data']['results'] as List;
+      return body.map((dynamic json) {
         return Comic(
-          id: json['id'],
-          title: json['title'],
+          id: json['id'] as int,
+          title: json['title'] as String,
           description: json['description'],
           thumbnailPath: json['thumbnail']['path'],
           thumbnailExtension: json['thumbnail']['extension'],
         );
       }).toList();
     }
+
     throw Exception('error fetching posts');
   }
 
-/*
   String _generateMd5(String input) {
     return md5.convert(utf8.encode(input)).toString();
   }
-  */
 }
