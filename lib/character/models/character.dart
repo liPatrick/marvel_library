@@ -6,7 +6,7 @@ class Character extends Equatable {
   Character({
     required this.id,
     required this.name,
-    this.description,
+    this.description = '',
     this.thumbnailPath,
     this.thumbnailExtension,
     this.comics,

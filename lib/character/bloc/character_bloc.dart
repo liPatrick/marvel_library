@@ -23,7 +23,10 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
         yield await _mapCharacterListFetchedToState(state);
       }
     } else if (event is CharacterSelected) {
-      yield state.copyWith(status: CharacterStatus.initial);
+      yield state.copyWith(
+          status: CharacterStatus.initial,
+          selectedCharacter: event.character,
+          characters: state.characters);
       if (event.character.loaded == true) {
         yield state.copyWith(
           status: CharacterStatus.success,
