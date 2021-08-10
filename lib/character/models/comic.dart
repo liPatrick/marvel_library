@@ -17,4 +17,19 @@ class Comic extends Equatable {
 
   @override
   List<Object?> get props => [];
+
+  Comic.fromJson(Map<String, dynamic> json)
+      : title = json['title'],
+        id = json['email'],
+        description = json['description'],
+        thumbnailPath = json['thumbnailPath'],
+        thumbnailExtension = json['thumbnailExtension'];
+
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'id': id,
+        'description': description,
+        'thumbnailPath': thumbnailPath,
+        'thumbnailExtension': thumbnailExtension,
+      };
 }

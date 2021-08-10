@@ -30,7 +30,8 @@ class CharacterAPI {
   final String publicKey = 'c71a3af5ae28e9436b14c4b448152d31';
   final String privateKey = '26617e1cb8cdd563845f1cc07c435b6f0e09a29c';
   final String ts = '1';
-  final String limit = '20';
+  final String characterLimit = '20';
+  final String comicLimit = '5';
 
   Future<List<Character>> fetchAllCharacters() async {
     final String requestURLBase = 'https://gateway.marvel.com';
@@ -41,7 +42,7 @@ class CharacterAPI {
         '&hash=' +
         _generateMd5(ts + privateKey + publicKey) +
         '&limit=' +
-        limit;
+        characterLimit;
     final response = await httpClient.get(
       Uri.parse(requestURLBase + path),
     );
@@ -103,7 +104,7 @@ class CharacterAPI {
         '&hash=' +
         _generateMd5(ts + privateKey + publicKey) +
         '&limit=' +
-        limit;
+        comicLimit;
     final response = await httpClient.get(
       Uri.parse(requestURLBase + path),
     );

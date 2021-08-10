@@ -23,4 +23,23 @@ class Character extends Equatable {
 
   @override
   List<Object?> get props => [];
+
+  Character.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        id = json['email'],
+        description = json['description'],
+        thumbnailPath = json['thumbnailPath'],
+        thumbnailExtension = json['thumbnailExtension'],
+        comics = json['comics'],
+        loaded = json['loaded'];
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'id': id,
+        'description': description,
+        'thumbnailPath': thumbnailPath,
+        'thumbnailExtension': thumbnailExtension,
+        'comics': comics,
+        'loaded': loaded,
+      };
 }

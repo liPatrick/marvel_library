@@ -33,19 +33,38 @@ class CharacterDetailsPage extends StatelessWidget {
           case CharacterStatus.failure:
             return const Center(child: Text('failed to fetch Character'));
           case CharacterStatus.success:
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(character.name, style: theme.textTheme.headline6),
-                  Text(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(character.name, style: theme.textTheme.headline6),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
                       character.description != null
                           ? character.description!
                           : 'N/A',
                       style: theme.textTheme.subtitle1),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text('Comics: '),
+                ),
+                Expanded(
+                  child: character.comics != null
+                      ? ListView.builder(
+                          itemBuilder: (BuildContext context, int index) {
+                            return ComicListItem(
+                              post: character.comics![index],
+                            );
+                          },
+                          itemCount: character.comics!.length,
+                        )
+                      : Text('No comics'),
+                ),
+              ],
             );
           default:
             return const Center(child: CircularProgressIndicator());

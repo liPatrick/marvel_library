@@ -11,6 +11,7 @@ import 'character/character.dart';
 
 void main() async {
   Bloc.observer = SimpleBlocObserver();
+
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: await getTemporaryDirectory(),
