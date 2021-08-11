@@ -4,42 +4,6 @@ import 'package:marvel_library/character/character.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:convert';
-
-void main() async {
-  /*
-  log('here');
-  final List<Character> characters =
-      await CharacterAPI(httpClient: http.Client()).fetchAllCharacters();
-  log(characters[0].id.toString());
-
-  for (var char in characters) {
-    final Character characterDetails =
-        await CharacterAPI(httpClient: http.Client())
-            .fetchCharacterDetails(char.id.toString());
-    log(characterDetails.name);
-    if (characterDetails.comics != null) {
-      for (var comic in characterDetails.comics!) {
-        log(comic.title);
-      }
-    }
-  }*/
-  var comics = [
-    new Comic(id: 12, title: 'comic1'),
-    new Comic(id: 13, title: 'comic2'),
-  ];
-  var chars = [
-    new Character(id: 1, name: 'char1', comics: comics),
-    new Character(id: 1, name: 'char2', comics: comics)
-  ];
-
-  var json = jsonEncode(chars);
-  print(json);
-  var decoded = jsonDecode(json);
-  List<Character> decodedCharacters =
-      List<Character>.from(decoded.map((i) => Character.fromJson(i)));
-  print(decodedCharacters[0].name);
-}
 
 class CharacterAPI {
   const CharacterAPI({required this.httpClient});
