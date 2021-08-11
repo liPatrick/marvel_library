@@ -6,21 +6,10 @@ enum CharacterStatus { initial, success, failure }
 class CharacterState {
   const CharacterState(
       {this.status = CharacterStatus.initial,
-      this.characters = const <Character>[],
+      required this.characters,
       this.selectedCharacter});
 
   final CharacterStatus status;
   final List<Character> characters;
   final Character? selectedCharacter;
-
-  CharacterState copyWith({
-    CharacterStatus status = CharacterStatus.initial,
-    Character? selectedCharacter,
-    List<Character>? characters,
-  }) {
-    return CharacterState(
-      selectedCharacter: selectedCharacter ?? this.selectedCharacter,
-      characters: characters ?? this.characters,
-    );
-  }
 }

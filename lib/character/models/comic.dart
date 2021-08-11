@@ -20,7 +20,7 @@ class Comic extends Equatable {
 
   Comic.fromJson(Map<String, dynamic> json)
       : title = json['title'],
-        id = json['email'],
+        id = json['id'],
         description = json['description'],
         thumbnailPath = json['thumbnailPath'],
         thumbnailExtension = json['thumbnailExtension'];

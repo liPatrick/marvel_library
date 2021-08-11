@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
@@ -9,8 +10,9 @@ import 'package:http/http.dart' as http;
 part 'character_event.dart';
 part 'character_state.dart';
 
-class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
-  CharacterBloc({required this.httpClient}) : super(CharacterState());
+class CharacterBloc extends HydratedBloc<CharacterEvent, CharacterState> {
+  CharacterBloc({required this.httpClient})
+      : super(CharacterState(characters: []));
   final http.Client httpClient;
 
   @override
@@ -20,21 +22,27 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     print('char length:' + state.characters.length.toString());
     if (event is CharacterListFetched) {
       if (state.characters.length != 0) {
+        yield CharacterState(
+          status: CharacterStatus.success,
+          selectedCharacter: null,
+          characters: state.characters,
+        );
       } else {
         yield await _mapCharacterListFetchedToState(state);
       }
     } else if (event is CharacterSelected) {
-      yield state.copyWith(
-          status: CharacterStatus.initial,
-          selectedCharacter: event.character,
-          characters: state.characters);
+      print(event.character.loaded);
       if (event.character.loaded == true) {
-        yield state.copyWith(
+        yield CharacterState(
           status: CharacterStatus.success,
           selectedCharacter: event.character,
           characters: state.characters,
         );
       } else {
+        yield CharacterState(
+            status: CharacterStatus.initial,
+            selectedCharacter: event.character,
+            characters: state.characters);
         yield await _mapCharacterDetailsFetchedToState(event);
       }
     } else if (event is CharacterDeselected) {
@@ -50,7 +58,12 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     try {
       final character = await CharacterAPI(httpClient: httpClient)
           .fetchCharacterDetails(event.character.id.toString());
-      character.loaded = true;
+      for (int i = 0; i < state.characters.length; i++) {
+        if (state.characters[i].id == character.id) {
+          state.characters[i] = character;
+          state.characters[i].loaded = true;
+        }
+      }
       return CharacterState(
         status: CharacterStatus.success,
         characters: state.characters,
@@ -58,6 +71,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
       );
     } on Exception {
       return CharacterState(
+        characters: state.characters,
         status: CharacterStatus.failure,
       );
     }
@@ -74,8 +88,21 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
       );
     } on Exception {
       return CharacterState(
+        characters: state.characters,
         status: CharacterStatus.failure,
       );
     }
+  }
+
+  @override
+  CharacterState? fromJson(Map<String, dynamic> json) {
+    List<Character> decodedCharacters = List<Character>.from(
+        jsonDecode(json['characters']).map((i) => Character.fromJson(i)));
+    return CharacterState(characters: decodedCharacters);
+  }
+
+  @override
+  Map<String, dynamic>? toJson(CharacterState state) {
+    return {'characters': jsonEncode(state.characters)};
   }
 }

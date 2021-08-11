@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-
+import 'dart:convert';
 import 'models.dart';
 
 class Character extends Equatable {
@@ -24,14 +24,25 @@ class Character extends Equatable {
   @override
   List<Object?> get props => [];
 
-  Character.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
-        id = json['email'],
-        description = json['description'],
-        thumbnailPath = json['thumbnailPath'],
-        thumbnailExtension = json['thumbnailExtension'],
-        comics = json['comics'],
-        loaded = json['loaded'];
+  static Character fromJson(Map<String, dynamic> json) {
+    List<Comic>? decodedComics;
+    if (jsonDecode(json['comics']) != null) {
+      decodedComics = List<Comic>.from(
+          jsonDecode(json['comics']).map((i) => Comic.fromJson(i)));
+    } else {
+      decodedComics = null;
+    }
+
+    return Character(
+      name: json['name'],
+      id: json['id'],
+      description: json['description'],
+      thumbnailPath: json['thumbnailPath'],
+      thumbnailExtension: json['thumbnailExtension'],
+      comics: decodedComics,
+      loaded: json['loaded'],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -39,7 +50,7 @@ class Character extends Equatable {
         'description': description,
         'thumbnailPath': thumbnailPath,
         'thumbnailExtension': thumbnailExtension,
-        'comics': comics,
+        'comics': jsonEncode(comics),
         'loaded': loaded,
       };
 }
