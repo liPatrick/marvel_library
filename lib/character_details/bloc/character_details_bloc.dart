@@ -52,6 +52,7 @@ class CharacterDetailsBloc
     return CharacterDetailsState(
       id: json['id'] as String,
       character: CharacterDetails.fromJson(json['character']),
+      status: json['status'] as CharacterDetailsStatus,
     );
   }
 
@@ -60,6 +61,7 @@ class CharacterDetailsBloc
     return {
       'id': state.id,
       'character': state.character!.toJson(),
+      'status': state.status.toString()
     };
   }
 }
