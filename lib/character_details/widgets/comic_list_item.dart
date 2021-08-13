@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:marvel_library/character/character.dart';
+import 'package:marvel_library/character_details/character_details.dart';
 
 class ComicListItem extends StatelessWidget {
   const ComicListItem({Key? key, required this.post}) : super(key: key);

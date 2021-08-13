@@ -1,9 +1,10 @@
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'package:marvel_library/character/character.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:developer';
+import 'package:marvel_library/character/character.dart';
+import 'package:marvel_library/character_details/character_details.dart';
 
 class CharacterAPI {
   const CharacterAPI({required this.httpClient});
@@ -41,7 +42,7 @@ class CharacterAPI {
     throw Exception('error fetching posts');
   }
 
-  Future<Character> fetchCharacterDetails(String characterID) async {
+  Future<CharacterDetails> fetchCharacterDetails(String characterID) async {
     final String requestURLBase = 'https://gateway.marvel.com';
     final String path = '/v1/public/characters/' +
         characterID +
@@ -60,7 +61,7 @@ class CharacterAPI {
       final body = json.decode(response.body);
       dynamic result = body['data']['results'][0];
       List<Comic> comics = await _fetchCharacterComics(characterID);
-      return Character(
+      return CharacterDetails(
         id: result['id'] as int,
         name: result['name'] as String,
         description: result['description'],

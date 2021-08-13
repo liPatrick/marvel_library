@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marvel_library/character/character.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marvel_library/character_details/character_details.dart';
 
 class CharacterListItem extends StatelessWidget {
   const CharacterListItem({Key? key, required this.post}) : super(key: key);
@@ -17,9 +17,12 @@ class CharacterListItem extends StatelessWidget {
         isThreeLine: true,
         subtitle: Text(post.id.toString()),
         dense: true,
-        onTap: () => context.read<CharacterBloc>().add(
-              CharacterSelected(character: post),
-            ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  CharacterDetailsPage(id: post.id.toString())),
+        ),
       ),
     );
   }

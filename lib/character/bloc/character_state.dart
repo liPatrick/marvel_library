@@ -4,12 +4,11 @@ enum CharacterStatus { initial, success, failure }
 
 @immutable
 class CharacterState {
-  const CharacterState(
-      {this.status = CharacterStatus.initial,
-      required this.characters,
-      this.selectedCharacter});
+  const CharacterState({
+    this.status = CharacterStatus.initial,
+    required this.characters,
+  });
 
   final CharacterStatus status;
   final List<Character> characters;
-  final Character? selectedCharacter;
 }
